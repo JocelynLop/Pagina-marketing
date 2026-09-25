@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Publicaciones para clientes{% endblock %}
+
+{% block body %}
+<main class="site-shell">
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ path('app_publications') }}">Aura Publica</a>
+            <div class="ms-auto d-flex gap-2">
+                <a class="btn btn-sm btn-outline-light" href="{{ path('app_publications_manage') }}">
+                    <i class="bi bi-pencil-square"></i>
+                    Usuario
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="client-hero">
+        <div class="container">
+            <div class="row align-items-end gy-5">
+                <div class="col-lg-7">
+                    <span class="eyebrow">Muro publico</span>
+                    <h1>Publicaciones claras, elegantes y listas para tus clientes.</h1>
+                    <p>Este espacio muestra solamente el contenido publicado desde el panel de usuario.</p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="hero-panel">
+                        <span>{{ publications|length }}</span>
+                        <p>publicacion{{ publications|length == 1 ? '' : 'es' }} visible{{ publications|length == 1 ? '' : 's' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="publication-section">
+        <div class="container">
+            <div class="section-toolbar">
+                <div>
+                    <span class="eyebrow dark">Actualizaciones</span>
+                    <h2>Ultimas publicaciones</h2>
+                </div>
+                <label class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="search" data-publication-search placeholder="Buscar publicacion">
+                </label>
+            </div>
+
+            {% if publications is empty %}
+                <div class="empty-state">
+                    <i class="bi bi-journal-richtext"></i>
+                    <h3>Aun no hay publicaciones</h3>
+                    <p>Cuando el usuario publique contenido, aparecera aqui para los clientes.</p>
+                </div>
+            {% else %}
+                <div class="publication-grid" data-publication-list>
+                    {% for publication in publications %}
+                        <article class="publication-card" data-publication-card>
+                            {% if publication.imageUrl %}
+                                <img src="{{ publication.imageUrl }}" alt="{{ publication.title }}">
+                            {% else %}
+                                <div class="image-placeholder">
+                                    <i class="bi bi-stars"></i>
+                                </div>
+                            {% endif %}
+                            <div class="publication-card-body">
+                                <div class="publication-meta">
+                                    <span>{{ publication.category }}</span>
+                                    <time datetime="{{ publication.createdAt|date('Y-m-d') }}">{{ publication.createdAt|date('d/m/Y') }}</time>
+                                </div>
+                                <h3>{{ publication.title }}</h3>
+                                <p>{{ publication.summary }}</p>
+                                <button class="btn btn-dark btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#publication-{{ publication.id }}">
+                                    Leer mas
+                                </button>
+                            </div>
+                        </article>
+
+                        <div class="modal fade" id="publication-{{ publication.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div>
+                                            <span class="modal-category">{{ publication.category }}</span>
+                                            <h2 class="modal-title fs-4">{{ publication.title }}</h2>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>{{ publication.content|nl2br }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <p class="no-results" data-no-results hidden>No se encontraron publicaciones con esa busqueda.</p>
+            {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}
