@@ -1,0 +1,32 @@
+<aside class="admin-sidebar">
+    <a class="brand-mark" href="{{ path('app_home') }}">Las Tablas</a>
+    <nav>
+        <a class="{{ active == 'novelties' ? 'active' : '' }}" href="{{ path('app_admin_novelties') }}">
+            <i class="bi bi-megaphone"></i>
+            Novedades
+        </a>
+        <a class="{{ active == 'blog' ? 'active' : '' }}" href="{{ path('app_admin_blog') }}">
+            <i class="bi bi-chat-heart"></i>
+            Blog
+        </a>
+        <a class="{{ active == 'menu' ? 'active' : '' }}" href="{{ path('app_admin_menu') }}">
+            <i class="bi bi-menu-button-wide"></i>
+            Menu
+        </a>
+        <a class="{{ active == 'contact' ? 'active' : '' }}" href="{{ path('app_admin_contact') }}">
+            <i class="bi bi-geo-alt"></i>
+            Contacto
+        </a>
+        <a href="{{ path('app_home') }}">
+            <i class="bi bi-eye"></i>
+            Vista cliente
+        </a>
+        <form method="post" action="{{ path('app_logout') }}" class="sidebar-logout">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+            <button type="submit">
+                <i class="bi bi-box-arrow-right"></i>
+                Cerrar sesion
+            </button>
+        </form>
+    </nav>
+</aside>

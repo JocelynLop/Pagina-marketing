@@ -1,0 +1,18 @@
+<div class="row g-3">
+    <div class="col-12">
+        <label class="form-label" for="title">Titulo</label>
+        <input class="form-control form-control-lg" id="title" name="title" required value="{{ post.title|default('') }}">
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="summary">Resumen</label>
+        <input class="form-control" id="summary" name="summary" required maxlength="180" value="{{ post.summary|default('') }}">
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="content">Contenido</label>
+        <textarea class="form-control" id="content" name="content" rows="7" required>{{ post.content|default('') }}</textarea>
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="imageUrl">Imagen</label>
+        <input class="form-control" id="imageUrl" name="imageUrl" placeholder="/img/imagenes/blog/..." value="{{ post.imageUrl|default('') }}">
+    </div>
+</div>

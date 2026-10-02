@@ -1,0 +1,34 @@
+<div class="row g-3">
+    <div class="col-md-8">
+        <label class="form-label" for="title">Titulo</label>
+        <input class="form-control form-control-lg" id="title" name="title" maxlength="90" required value="{{ novelty.title|default('') }}">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="category">Categoria</label>
+        <input class="form-control form-control-lg" id="category" name="category" maxlength="40" placeholder="General" value="{{ novelty.category|default('') }}">
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="summary">Resumen</label>
+        <input class="form-control" id="summary" name="summary" maxlength="160" required value="{{ novelty.summary|default('') }}">
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="content">Contenido</label>
+        <textarea class="form-control" id="content" name="content" rows="6" required>{{ novelty.content|default('') }}</textarea>
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="imageUrl">Imagen</label>
+        <input class="form-control" id="imageUrl" name="imageUrl" placeholder="/img/imagenes/novedades/..." value="{{ novelty.imageUrl|default('') }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="customLabel">Etiqueta personalizada</label>
+        <input class="form-control" id="customLabel" name="customLabel" maxlength="40" placeholder="Oferta, Promo, Evento..." value="{{ novelty.customLabel|default('') }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="labelExpiresAt">Vigencia de etiqueta</label>
+        <input class="form-control" id="labelExpiresAt" name="labelExpiresAt" type="datetime-local" value="{{ novelty.labelExpiresAt|default('') ? novelty.labelExpiresAt|date('Y-m-d\\TH:i') : '' }}">
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="expiresAt">Caducidad de novedad para cliente</label>
+        <input class="form-control" id="expiresAt" name="expiresAt" type="datetime-local" value="{{ novelty.expiresAt|default('') ? novelty.expiresAt|date('Y-m-d\\TH:i') : '' }}">
+    </div>
+</div>

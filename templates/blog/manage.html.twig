@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin blog | Las Tablas{% endblock %}
+
+{% block body %}
+<main class="admin-shell">
+    {% include 'admin/_sidebar.html.twig' with { active: active } %}
+    <section class="admin-content">
+        <div class="admin-hero blog-admin-hero">
+            <div class="admin-heading">
+                <div>
+                    <span class="eyebrow">Panel admin</span>
+                    <h1>Blog</h1>
+                    <p>Crea historias, elimina entradas y modera comentarios de clientes registrados.</p>
+                </div>
+                <a class="btn btn-light action-button" href="{{ path('app_blog') }}">Ver blog</a>
+            </div>
+            <div class="admin-stats">
+                <article><span>{{ posts|length }}</span><p>entradas</p></article>
+                <article><span>{{ heartTotal }}</span><p>corazones</p></article>
+                <article><span>4</span><p>entradas iniciales</p></article>
+            </div>
+        </div>
+        {% include 'admin/_messages.html.twig' ignore missing %}
+        {% if errors is not empty %}
+            <div class="alert alert-danger shadow-sm">{% for error in errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+        <div class="admin-grid">
+            <form class="publication-form" method="post" action="{{ path('app_admin_blog') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('create_blog_post') }}">
+                <div class="form-section-title"><i class="bi bi-plus-circle"></i>Nueva entrada</div>
+                {% include 'blog/_form_fields.html.twig' with { post: {} } %}
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button class="btn btn-dark action-button" type="submit">Publicar</button>
+                    <button class="btn btn-outline-secondary action-button" type="reset">Limpiar</button>
+                </div>
+            </form>
+            <aside class="preview-card">
+                <span class="eyebrow dark">Comentarios</span>
+                <h2 class="preview-heading">Solo usuarios registrados comentan</h2>
+                <p>Cuando elimines un comentario desaparecera por completo, sin mostrar avisos de eliminado.</p>
+            </aside>
+        </div>
+        <section class="published-list">
+            <div class="section-toolbar compact">
+                <div><span class="eyebrow dark">Entradas</span><h2>Blog publicado</h2></div>
+                <span class="counter-pill">{{ posts|length }} total</span>
+            </div>
+            <div class="table-responsive publication-table">
+                <table class="table align-middle">
+                    <thead><tr><th>Entrada</th><th>Fecha</th><th>Corazones</th><th class="text-end">Acciones</th></tr></thead>
+                    <tbody>
+                        {% for post in posts %}
+                            <tr>
+                                <td><strong>{{ post.title }}</strong><span>{{ post.summary }}</span></td>
+                                <td>{{ post.createdAt|date('d/m/Y H:i') }}</td>
+                                <td>{{ post.hearts }}</td>
+                                <td class="text-end">
+                                    <div class="table-actions">
+                                        <a class="btn btn-sm btn-outline-dark" href="{{ path('app_admin_blog_edit', { id: post.id }) }}"><i class="bi bi-pencil"></i></a>
+                                        <form method="post" action="{{ path('app_admin_blog_delete', { id: post.id }) }}" data-confirm-delete>
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_blog_post_' ~ post.id) }}">
+                                            <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="published-list">
+            <div class="section-toolbar compact">
+                <div><span class="eyebrow dark">Moderacion</span><h2>Comentarios recientes</h2></div>
+                <span class="counter-pill">{{ comments|length }} total</span>
+            </div>
+            {% if comments is empty %}
+                <div class="empty-state light"><i class="bi bi-chat-left-text"></i><h3>Sin comentarios</h3><p>Cuando los usuarios registrados comenten, apareceran aqui.</p></div>
+            {% else %}
+                <div class="table-responsive publication-table">
+                    <table class="table align-middle">
+                        <thead><tr><th>Comentario</th><th>Autor</th><th>Fecha</th><th class="text-end">Acciones</th></tr></thead>
+                        <tbody>
+                            {% for comment in comments %}
+                                <tr>
+                                    <td><strong>{{ comment.content }}</strong><span>Entrada: {{ comment.postId }}</span></td>
+                                    <td>{{ comment.author }}</td>
+                                    <td>{{ comment.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td class="text-end">
+                                        <form method="post" action="{{ path('app_admin_blog_comment_delete', { id: comment.id }) }}" data-confirm-delete>
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_blog_comment_' ~ comment.id) }}">
+                                            <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </section>
+    </section>
+</main>
+{% endblock %}

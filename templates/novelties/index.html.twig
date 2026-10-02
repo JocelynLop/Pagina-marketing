@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Novedades | Las Tablas{% endblock %}
+
+{% block body %}
+<main class="site-shell">
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">Las Tablas</a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#noveltiesNav" aria-label="Abrir menu">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="noveltiesNav">
+                <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <a class="nav-link" href="{{ path('app_home') }}#quienes-somos">Quienes somos</a>
+                    <a class="nav-link" href="{{ path('app_blog') }}">Blog</a>
+                    <a class="nav-link" href="{{ path('app_menu') }}">Menu</a>
+                    <a class="nav-link" href="{{ path('app_home') }}#contactanos">Contactanos</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="btn btn-sm nav-admin-button" href="{{ path('app_admin_novelties') }}"><i class="bi bi-sliders"></i> Admin</a>
+                    {% elseif app.user %}
+                        <form method="post" action="{{ path('app_logout') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button class="btn btn-sm login-button ghost" type="submit"><i class="bi bi-box-arrow-right"></i> Salir</button>
+                        </form>
+                    {% else %}
+                        <a class="btn btn-sm login-button" href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-right"></i> Entrar</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="list-hero restaurant-list-hero">
+        <div class="container">
+            <span class="eyebrow">Novedades</span>
+            <h1>Promociones, eventos y sabores nuevos.</h1>
+            <p>Encuentra lo mas reciente de Las Tablas y no te pierdas las etiquetas con tiempo limitado.</p>
+        </div>
+    </section>
+
+    <section class="publication-section">
+        <div class="container">
+            <div class="section-toolbar">
+                <div>
+                    <span class="eyebrow dark">Archivo activo</span>
+                    <h2>{{ novelties|length }} novedad{{ novelties|length == 1 ? '' : 'es' }}</h2>
+                </div>
+                <label class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="search" data-publication-search placeholder="Buscar novedad">
+                </label>
+            </div>
+            {% if novelties is empty %}
+                <div class="empty-state">
+                    <i class="bi bi-megaphone"></i>
+                    <h3>Aun no hay novedades activas</h3>
+                    <p>Cuando existan promociones o eventos vigentes, apareceran aqui.</p>
+                </div>
+            {% else %}
+                <div class="publication-grid all-publications" data-publication-list>
+                    {% for novelty in novelties %}
+                        {% include 'novelties/_card.html.twig' with { novelty: novelty } %}
+                    {% endfor %}
+                </div>
+                <p class="no-results" data-no-results hidden>No se encontraron novedades con esa busqueda.</p>
+            {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}

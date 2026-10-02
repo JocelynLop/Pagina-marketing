@@ -15,20 +15,43 @@
                 <i class="bi bi-eye"></i>
                 Vista cliente
             </a>
+            <form method="post" action="{{ path('app_logout') }}" class="sidebar-logout">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                <button type="submit">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Cerrar sesion
+                </button>
+            </form>
         </nav>
     </aside>
 
     <section class="admin-content">
-        <div class="admin-heading">
-            <div>
-                <span class="eyebrow dark">Panel de usuario</span>
-                <h1>Crear publicaciones</h1>
-                <p>Agrega contenido nuevo para que aparezca en la pagina publica de tus clientes.</p>
+        <div class="admin-hero">
+            <div class="admin-heading">
+                <div>
+                    <span class="eyebrow">Panel de usuario</span>
+                    <h1>Centro de publicaciones</h1>
+                    <p>Agrega contenido nuevo, revisa lo publicado y manten la pagina publica siempre fresca para tus clientes.</p>
+                </div>
+                <a class="btn btn-light action-button" href="{{ path('app_publications') }}">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                    Ver pagina
+                </a>
             </div>
-            <a class="btn btn-outline-dark action-button" href="{{ path('app_publications') }}">
-                <i class="bi bi-box-arrow-up-right"></i>
-                Ver pagina
-            </a>
+            <div class="admin-stats">
+                <article>
+                    <span>{{ publications|length }}</span>
+                    <p>publicacion{{ publications|length == 1 ? '' : 'es' }} activa{{ publications|length == 1 ? '' : 's' }}</p>
+                </article>
+                <article>
+                    <span>{{ publications|filter(publication => publication.isNew)|length }}</span>
+                    <p>nueva{{ publications|filter(publication => publication.isNew)|length == 1 ? '' : 's' }} en 3 dias</p>
+                </article>
+                <article>
+                    <span>3</span>
+                    <p>visibles en portada</p>
+                </article>
+            </div>
         </div>
 
         {% for label, messages in app.flashes %}
@@ -91,6 +114,7 @@
 
             <aside class="preview-card">
                 <span class="eyebrow dark">Vista previa</span>
+                <h2 class="preview-heading">Asi se vera tu publicacion</h2>
                 <div class="preview-image" data-preview-image-box>
                     <i class="bi bi-image"></i>
                 </div>

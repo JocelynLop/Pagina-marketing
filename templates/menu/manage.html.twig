@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin menu | Las Tablas{% endblock %}
+
+{% block body %}
+<main class="admin-shell">
+    {% include 'admin/_sidebar.html.twig' with { active: active } %}
+    <section class="admin-content">
+        <div class="admin-hero menu-admin-hero">
+            <div class="admin-heading">
+                <div>
+                    <span class="eyebrow">Panel admin</span>
+                    <h1>Menu</h1>
+                    <p>Administra platillos, bebidas, precios e imagenes. Las estrellas de clientes alimentan el carrusel principal.</p>
+                </div>
+                <a class="btn btn-light action-button" href="{{ path('app_menu') }}">Ver menu</a>
+            </div>
+            <div class="admin-stats">
+                <article><span>{{ items|length }}</span><p>items en menu</p></article>
+                <article><span>{{ items|filter(i => i.type == 'morning')|length }}</span><p>de manana</p></article>
+                <article><span>{{ items|filter(i => i.type == 'afternoon')|length }}</span><p>de tarde</p></article>
+            </div>
+        </div>
+        {% include 'admin/_messages.html.twig' ignore missing %}
+        {% if errors is not empty %}
+            <div class="alert alert-danger shadow-sm">{% for error in errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+        <div class="admin-grid">
+            <form class="publication-form" method="post" action="{{ path('app_admin_menu') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('create_menu_item') }}">
+                <div class="form-section-title"><i class="bi bi-plus-circle"></i>Nuevo platillo o bebida</div>
+                {% include 'menu/_form_fields.html.twig' with { item: {} } %}
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button class="btn btn-dark action-button" type="submit"><i class="bi bi-plus"></i>Agregar</button>
+                    <button class="btn btn-outline-secondary action-button" type="reset">Limpiar</button>
+                </div>
+            </form>
+            <aside class="preview-card">
+                <span class="eyebrow dark">Favoritos</span>
+                <h2 class="preview-heading">Las estrellas importan</h2>
+                <p>Los platillos mas marcados por clientes suben al carrusel de inicio para mostrar lo mas antojable primero.</p>
+            </aside>
+        </div>
+        <section class="published-list">
+            <div class="section-toolbar compact">
+                <div><span class="eyebrow dark">Menu activo</span><h2>Platillos y bebidas</h2></div>
+                <span class="counter-pill">{{ items|length }} total</span>
+            </div>
+            <div class="table-responsive publication-table">
+                <table class="table align-middle">
+                    <thead><tr><th>Item</th><th>Categoria</th><th>Tipo</th><th>Precio</th><th>Estrellas</th><th class="text-end">Acciones</th></tr></thead>
+                    <tbody>
+                        {% for item in items %}
+                            <tr>
+                                <td><strong>{{ item.name }}</strong><span>{{ item.description }}</span></td>
+                                <td>{{ item.categoryLabel|default('Entradas') }}</td>
+                                <td>{{ item.type == 'morning' ? 'Manana' : 'Tarde' }}</td>
+                                <td>${{ item.price|number_format(0, '.', ',') }}</td>
+                                <td>{{ item.stars }}</td>
+                                <td class="text-end">
+                                    <div class="table-actions">
+                                        <a class="btn btn-sm btn-outline-dark" href="{{ path('app_admin_menu_edit', { id: item.id }) }}"><i class="bi bi-pencil"></i></a>
+                                        <form method="post" action="{{ path('app_admin_menu_delete', { id: item.id }) }}" data-confirm-delete>
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_menu_item_' ~ item.id) }}">
+                                            <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

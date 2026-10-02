@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar blog | Las Tablas{% endblock %}
+
+{% block body %}
+<main class="admin-shell">
+    {% include 'admin/_sidebar.html.twig' with { active: active } %}
+    <section class="admin-content">
+        <div class="admin-heading plain-heading">
+            <div>
+                <span class="eyebrow dark">Blog</span>
+                <h1>Editar entrada</h1>
+            </div>
+            <a class="btn btn-outline-dark action-button" href="{{ path('app_admin_blog') }}">Volver</a>
+        </div>
+        {% if errors is not empty %}
+            <div class="alert alert-danger shadow-sm">{% for error in errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+        <form class="publication-form" method="post" action="{{ path('app_admin_blog_edit', { id: post.id }) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('edit_blog_post_' ~ post.id) }}">
+            {% include 'blog/_form_fields.html.twig' with { post: post } %}
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <button class="btn btn-dark action-button" type="submit"><i class="bi bi-check2"></i>Guardar cambios</button>
+                <a class="btn btn-outline-secondary action-button" href="{{ path('app_admin_blog') }}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+{% endblock %}

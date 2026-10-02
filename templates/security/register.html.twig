@@ -1,0 +1,46 @@
+{% extends 'security/layout.html.twig' %}
+
+{% block title %}Crear cuenta | Las Tablas{% endblock %}
+
+{% block auth_content %}
+        <span class="eyebrow">Eres parte de la mesa</span>
+        <h1 id="auth-title">Crear cuenta</h1>
+        <p>Siempre hay un lugar para ti en Las Tablas.</p>
+
+        {% if errors is not empty %}
+            <div class="alert alert-danger" role="alert">
+                {% for error in errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_register') }}" class="auth-form">
+            <input type="hidden" name="_token" value="{{ csrf_token('register_user') }}">
+
+            <div class="auth-field">
+                <label class="form-label" for="email">Correo electr&oacute;nico</label>
+                <input class="form-control form-control-lg" id="email" type="email" name="email" value="{{ email }}" autocomplete="email" placeholder="tu@correo.com" required>
+            </div>
+
+            <div class="auth-field">
+                <label class="form-label" for="birthdate">Fecha de nacimiento</label>
+                <input class="form-control form-control-lg" id="birthdate" type="text" name="birthdate" value="{{ birthdate }}" placeholder="DD/MM/AAAA" autocomplete="bday" inputmode="numeric" maxlength="10" aria-describedby="birthdate-hint" required>
+                <small class="auth-hint" id="birthdate-hint">D&iacute;a / mes / a&ntilde;o. Por ejemplo: 15/06/1995.</small>
+            </div>
+
+            {% include 'security/_password_field.html.twig' with {fieldId: 'password', autocomplete: 'new-password', hint: true} only %}
+
+            {% include 'security/_password_field.html.twig' with {fieldId: 'confirm_password', autocomplete: 'new-password'} only %}
+
+            <button class="btn btn-dark action-button w-100" type="submit">
+                <i class="bi bi-person-plus"></i>
+                Crear cuenta
+            </button>
+        </form>
+
+        <div class="auth-links">
+            <span>&iquest;Ya tienes cuenta?</span>
+            <a href="{{ path('app_login') }}">Iniciar sesi&oacute;n <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+{% endblock %}

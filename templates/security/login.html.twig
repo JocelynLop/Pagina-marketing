@@ -1,0 +1,38 @@
+{% extends 'security/layout.html.twig' %}
+
+{% block title %}Iniciar sesi&oacute;n | Las Tablas{% endblock %}
+
+{% block auth_content %}
+        <span class="eyebrow">Bienvenido de nuevo</span>
+        <h1 id="auth-title">Iniciar sesi&oacute;n</h1>
+        <p>Un lugar en nuestra mesa, tambi&eacute;n aqu&iacute;.</p>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success" role="status">{{ message }}</div>
+        {% endfor %}
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">Correo o contrase&ntilde;a incorrectos.</div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_login') }}" class="auth-form">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="auth-field">
+                <label class="form-label" for="email">Correo electr&oacute;nico</label>
+                <input class="form-control form-control-lg" id="email" type="email" name="email" value="{{ last_username }}" autocomplete="email" placeholder="tu@correo.com" required>
+            </div>
+
+            {% include 'security/_password_field.html.twig' with {fieldId: 'password', autocomplete: 'current-password'} only %}
+
+            <button class="btn btn-dark action-button w-100" type="submit">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Entrar
+            </button>
+        </form>
+
+        <div class="auth-links">
+            <span>&iquest;A&uacute;n no tienes cuenta?</span>
+            <a href="{{ path('app_register') }}">Crear cuenta <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+{% endblock %}

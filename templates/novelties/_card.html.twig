@@ -1,0 +1,64 @@
+<article class="publication-card interactive-card" data-publication-card data-novelty-id="{{ novelty.id }}" data-card-modal="#novelty-{{ novelty.id }}" data-mark-viewed="{{ novelty.id }}" role="button" tabindex="0">
+    <span class="new-badge" data-new-badge>Nueva</span>
+    {% if novelty.customLabel and novelty.isLabelActive %}
+        <span class="label-badge" data-countdown="{{ novelty.labelExpiresAt }}">
+            {{ novelty.customLabel }}
+            <small></small>
+        </span>
+    {% endif %}
+    {% if novelty.imageUrl %}
+        <img src="{{ novelty.imageUrl }}" alt="{{ novelty.title }}">
+    {% else %}
+        <div class="image-placeholder">
+            <i class="bi bi-stars"></i>
+        </div>
+    {% endif %}
+    <div class="publication-card-body">
+        <div class="publication-meta">
+            <span>{{ novelty.category }}</span>
+            <time>{{ novelty.createdAt|date('d/m/Y') }}</time>
+        </div>
+        <h3>{{ novelty.title }}</h3>
+        <p>{{ novelty.summary }}</p>
+        <a class="read-more-pill" href="#novelty-{{ novelty.id }}" data-bs-target="#novelty-{{ novelty.id }}" data-card-modal-target="#novelty-{{ novelty.id }}" data-mark-viewed="{{ novelty.id }}" onpointerdown="return window.openLasTablasCardModal ? window.openLasTablasCardModal(this) : true" onclick="return window.openLasTablasCardModal ? window.openLasTablasCardModal(this) : true">
+            <i class="bi bi-plus-circle"></i>
+            Ver novedad
+        </a>
+    </div>
+</article>
+
+<div class="modal fade restaurant-modal" id="novelty-{{ novelty.id }}" tabindex="-1" aria-labelledby="novelty-title-{{ novelty.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <button type="button" class="modal-close-floating" data-bs-dismiss="modal" aria-label="Cerrar" title="Cerrar">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+            <div class="modal-body split-modal-body">
+                {% if novelty.imageUrl %}
+                <div class="modal-image-pane">
+                    <img src="{{ novelty.imageUrl }}" alt="{{ novelty.title }}">
+                </div>
+                {% endif %}
+                <div class="modal-text-pane">
+                    <div class="modal-detail-content">
+                        <div class="modal-detail-topline">
+                            <span class="modal-category">{{ novelty.category }}</span>
+                            <time>{{ novelty.createdAt|date('d/m/Y') }}</time>
+                        </div>
+                        <h2 id="novelty-title-{{ novelty.id }}">{{ novelty.title }}</h2>
+                        <p class="modal-lead">{{ novelty.summary }}</p>
+                        <div class="modal-full-copy">
+                            <p>{{ novelty.content|nl2br }}</p>
+                        </div>
+                    </div>
+
+                    {% include 'blog/_comments.html.twig' with {
+                        comments: novelty.comments|default([]),
+                        formAction: path('app_novelty_comment', { id: novelty.id }),
+                        token: csrf_token('comment_novelty_' ~ novelty.id)
+                    } %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -10,20 +10,33 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class PublicationController extends AbstractController
 {
     private const STORAGE_FILE = '/data/publications.json';
 
-    #[Route('/', name: 'app_publications')]
+    #[Route('/inicio-anterior', name: 'app_publications')]
     public function index(): Response
     {
+        $publications = $this->loadPublications();
+
         return $this->render('publications/index.html.twig', [
+            'publications' => array_slice($publications, 0, 3),
+            'totalPublications' => count($publications),
+        ]);
+    }
+
+    #[Route('/publicaciones-anterior', name: 'app_publications_all_legacy')]
+    public function all(): Response
+    {
+        return $this->render('publications/all.html.twig', [
             'publications' => $this->loadPublications(),
         ]);
     }
 
-    #[Route('/usuario/publicaciones', name: 'app_publications_manage', methods: ['GET', 'POST'])]
+    #[Route('/usuario/publicaciones-anterior', name: 'app_publications_manage_legacy', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function manage(Request $request, CsrfTokenManagerInterface $csrfTokenManager): Response
     {
         $errors = [];
@@ -83,6 +96,7 @@ final class PublicationController extends AbstractController
     }
 
     #[Route('/usuario/publicaciones/{id}/eliminar', name: 'app_publications_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(string $id, Request $request, CsrfTokenManagerInterface $csrfTokenManager): RedirectResponse
     {
         $submittedToken = (string) $request->request->get('_token');
@@ -112,13 +126,26 @@ final class PublicationController extends AbstractController
         $path = $this->getStoragePath();
 
         if (!is_file($path)) {
-            return $this->starterPublications();
+            $publications = $this->starterPublications();
+        } else {
+            $content = file_get_contents($path);
+            $publications = json_decode($content ?: '[]', true);
         }
 
-        $content = file_get_contents($path);
-        $publications = json_decode($content ?: '[]', true);
+        if (!is_array($publications)) {
+            return [];
+        }
 
-        return is_array($publications) ? $publications : [];
+        usort($publications, static fn (array $first, array $second): int => strtotime($second['createdAt'] ?? '') <=> strtotime($first['createdAt'] ?? ''));
+
+        $now = new \DateTimeImmutable();
+
+        return array_map(static function (array $publication) use ($now): array {
+            $createdAt = new \DateTimeImmutable($publication['createdAt'] ?? 'now');
+            $publication['isNew'] = $createdAt >= $now->modify('-3 days');
+
+            return $publication;
+        }, $publications);
     }
 
     /**
