@@ -1,0 +1,63 @@
+<article class="publication-card interactive-card" data-publication-card data-card-modal="#blog-{{ post.id }}" role="button" tabindex="0">
+    {% if post.imageUrl %}
+        <img src="{{ post.imageUrl }}" alt="{{ post.title }}">
+    {% endif %}
+    <div class="publication-card-body">
+        <div class="publication-meta">
+            <span>{{ post.hearts }} corazones</span>
+            <time>{{ post.createdAt|date('d/m/Y') }}</time>
+        </div>
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.summary }}</p>
+        <a class="read-more-pill" href="#blog-{{ post.id }}" data-bs-target="#blog-{{ post.id }}" data-card-modal-target="#blog-{{ post.id }}" onpointerdown="return window.openLasTablasCardModal ? window.openLasTablasCardModal(this) : true" onclick="return window.openLasTablasCardModal ? window.openLasTablasCardModal(this) : true">
+            <i class="bi bi-plus-circle"></i>
+            Ver historia
+        </a>
+    </div>
+</article>
+
+<div class="modal fade restaurant-modal" id="blog-{{ post.id }}" tabindex="-1" aria-labelledby="blog-title-{{ post.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <button type="button" class="modal-close-floating" data-bs-dismiss="modal" aria-label="Cerrar" title="Cerrar">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+            <div class="modal-body split-modal-body">
+                {% if post.imageUrl %}
+                <div class="modal-image-pane">
+                    <img src="{{ post.imageUrl }}" alt="{{ post.title }}">
+                </div>
+                {% endif %}
+                <div class="modal-text-pane">
+                    <div class="modal-detail-content">
+                        <div class="modal-detail-topline">
+                            <span class="modal-category">Blog</span>
+                            <time>{{ post.createdAt|date('d/m/Y') }}</time>
+                        </div>
+                        <h2 id="blog-title-{{ post.id }}">{{ post.title }}</h2>
+                        <p class="modal-lead">{{ post.summary }}</p>
+                        <div class="modal-full-copy">
+                            <p>{{ post.content|nl2br }}</p>
+                        </div>
+
+                        <div class="modal-detail-actions">
+                            <form method="post" action="{{ path('app_blog_heart', { id: post.id }) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('heart_blog_' ~ post.id) }}">
+                                <button class="heart-button" type="submit">
+                                    <i class="bi bi-heart"></i>
+                                    {{ post.hearts }} corazon{{ post.hearts == 1 ? '' : 'es' }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {% include 'blog/_comments.html.twig' with {
+                        comments: post.comments|default([]),
+                        formAction: path('app_blog_comment', { id: post.id }),
+                        token: csrf_token('comment_blog_' ~ post.id)
+                    } %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

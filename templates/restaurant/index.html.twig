@@ -1,0 +1,238 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Las Tablas | Restaurante en Cosamaloapan{% endblock %}
+
+{% block body %}
+<main class="site-shell">
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">Las Tablas</a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-main-nav-toggle aria-controls="mainNav" aria-expanded="false" aria-label="Abrir menu">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <a class="nav-link" href="#inicio">Inicio</a>
+                    <a class="nav-link" href="#quienes-somos">Quienes somos</a>
+                    <a class="nav-link" href="#novedades">Novedades</a>
+                    <a class="nav-link" href="#blog">Blog</a>
+                    <a class="nav-link" href="#menu">Menu</a>
+                    <a class="nav-link" href="#contactanos">Contactanos</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="btn btn-sm nav-admin-button" href="{{ path('app_admin_novelties') }}">
+                            <i class="bi bi-sliders"></i>
+                            Admin
+                        </a>
+                    {% elseif app.user %}
+                        <form method="post" action="{{ path('app_logout') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button class="btn btn-sm login-button ghost" type="submit">
+                                <i class="bi bi-box-arrow-right"></i>
+                                Salir
+                            </button>
+                        </form>
+                    {% else %}
+                        <a class="btn btn-sm login-button" href="{{ path('app_login') }}">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            Entrar
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% set heroLead = heroItems|first %}
+    <section class="client-hero yamato-hero home-scroll-section is-in-view" id="inicio" data-hero-carousel data-scroll-section style="--hero-photo: url('{{ heroLead ? heroLead.imageUrl : '/img/imagenes/menu/platillos de la tarde/rib eye.jpeg' }}')">
+        <div class="hero-motion-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="container-fluid hero-content hero-container">
+            <div class="hero-layout">
+                <div class="hero-copy">
+                    <span class="hero-kanji">LT</span>
+                    <span class="eyebrow">Desde Cosamaloapan</span>
+                    <h1><span>El arte de</span> Las Tablas</h1>
+                    <p>Parrilla, desayunos, bebidas y sabores para compartir en un ambiente calido, familiar y con sabor de asador.</p>
+                    <a class="hero-discover" href="#quienes-somos" aria-label="Bajar a Quienes somos">
+                        Descubrir
+                        <i class="bi bi-chevron-down"></i>
+                    </a>
+                </div>
+                <div class="hero-dish-stage" aria-label="Platillos destacados" aria-hidden="true">
+                    {% for item in heroItems %}
+                        <figure class="hero-dish-slide {{ loop.first ? 'active' : '' }}">
+                            <img src="{{ item.imageUrl }}" alt="{{ item.name }}">
+                            <figcaption>
+                                <span>{{ item.type == 'morning' ? 'Menu de manana' : 'Menu de tarde' }}</span>
+                                <strong>{{ item.name }}</strong>
+                                <small>${{ item.price|number_format(0, '.', ',') }}</small>
+                            </figcaption>
+                        </figure>
+                    {% else %}
+                        <figure class="hero-dish-slide active">
+                            <img src="/img/imagenes/menu/platillos de la tarde/rib eye.jpeg" alt="Rib eye">
+                            <figcaption><span>Especialidad</span><strong>Rib eye</strong><small>Parrilla</small></figcaption>
+                        </figure>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section home-scroll-section" id="quienes-somos" data-scroll-section>
+        <div class="container">
+            <div class="about-grid">
+                <div>
+                    <span class="eyebrow dark">Quienes somos</span>
+                    <h2>Un restaurante para disfrutar la mesa con calma, sabor y buen ambiente.</h2>
+                    <p>Las Tablas es un restaurante/asador en Cosamaloapan, Veracruz, pensado para compartir desayunos, comidas y cenas con un toque de parrilla, platillos generosos, cafe y bebidas para acompanar cada momento.</p>
+                    <div class="button-row about-actions">
+                        <a class="btn about-cta primary" href="{{ contact.mapsUrl }}" target="_blank" rel="noopener">
+                            <i class="bi bi-geo-alt"></i>
+                            Encuentranos aqui
+                        </a>
+                        <a class="btn about-cta secondary" href="{{ path('app_menu') }}">
+                            <i class="bi bi-journal-richtext"></i>
+                            Ver menu
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div class="top-menu-kicker">
+                        <span>Lo mas pedido</span>
+                        <strong>Top del menu</strong>
+                    </div>
+                    <div class="top-menu-carousel" data-top-menu-carousel>
+                        <div class="about-feature-grid dish-feature-grid top-menu-grid top-menu-track" aria-live="polite">
+                        {% for item in menuHighlights %}
+                            <article class="top-menu-card {{ loop.first ? 'active' : '' }}" data-top-menu-item>
+                                <span class="top-menu-rank">#{{ loop.index }}</span>
+                                <img src="{{ item.imageUrl }}" alt="{{ item.name }}">
+                                <div class="top-menu-votes">
+                                    <i class="bi bi-star-fill"></i>
+                                    {{ item.stars }} voto{{ item.stars == 1 ? '' : 's' }}
+                                </div>
+                                <h3>{{ item.name }}</h3>
+                                <p>{{ item.description }}</p>
+                            </article>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="publication-section home-scroll-section" id="novedades" data-scroll-section>
+        <div class="container">
+            <div class="section-toolbar">
+                <div>
+                    <span class="eyebrow dark">Novedades</span>
+                    <h2>Lo nuevo en Las Tablas</h2>
+                </div>
+                <a class="section-more-button" href="{{ path('app_novelties') }}">
+                    <i class="bi bi-plus-lg"></i>
+                    Ver mas novedades
+                </a>
+            </div>
+            <div class="publication-fan" data-fan-carousel>
+                <div class="publication-fan-track" aria-live="polite">
+                {% for novelty in novelties %}
+                    <div class="publication-fan-item {{ loop.first ? 'active' : '' }}" data-fan-item>
+                        {% include 'novelties/_card.html.twig' with { novelty: novelty } %}
+                    </div>
+                {% else %}
+                    <div class="empty-state publication-fan-item active" data-fan-item>
+                        <i class="bi bi-megaphone"></i>
+                        <h3>Muy pronto tendremos novedades</h3>
+                        <p>Vuelve pronto para conocer promociones y eventos.</p>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="publication-section home-scroll-section" id="blog" data-scroll-section>
+        <div class="container">
+            <div class="section-toolbar">
+                <div>
+                    <span class="eyebrow dark">Blog</span>
+                    <h2>Historias y sabores</h2>
+                </div>
+                <a class="section-more-button" href="{{ path('app_blog') }}">
+                    <i class="bi bi-plus-lg"></i>
+                    Ver mas historias
+                </a>
+            </div>
+            <div class="publication-fan" data-fan-carousel>
+                <div class="publication-fan-track" aria-live="polite">
+                {% for post in blogPosts %}
+                    <div class="publication-fan-item {{ loop.first ? 'active' : '' }}" data-fan-item>
+                        {% include 'blog/_card_modal.html.twig' with { post: post } %}
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="menu-band home-scroll-section" id="menu" data-scroll-section>
+        <div class="container">
+            <div class="section-toolbar yamato-section-heading">
+                <div>
+                    <span class="eyebrow">Experiencia culinaria</span>
+                    <h2>Nuestro menu</h2>
+                    <p>Cada plato se sirve con sabor de casa, ingredientes frescos y preparacion pensada para disfrutarse sin prisa.</p>
+                </div>
+                <a class="btn btn-light action-button" href="{{ path('app_menu') }}">
+                    <i class="bi bi-stars"></i>
+                    Ver menu completo
+                </a>
+            </div>
+            <div class="menu-highlight-grid yamato-menu-grid">
+                <article class="menu-card dark-card yamato-menu-card">
+                    {% set afternoonLead = afternoonCutItems|first %}
+                    <img src="{{ afternoonLead ? afternoonLead.imageUrl : '/img/imagenes/menu/platillos de la tarde/pulpo a las brasas.jpeg' }}" alt="Especialidades de la parrilla">
+                    <div>
+                        
+                        <h3>Parrilla</h3>
+                        <p>Cortes de la tarde, brasas y sabor de asador para una comida especial.</p>
+                        <ul class="yamato-menu-list">
+                            {% for item in afternoonCutItems|slice(0, 4) %}
+                                <li>
+                                    <strong>{{ item.name }}</strong>
+                                    <span>${{ item.price|number_format(0, '.', ',') }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </article>
+                <article class="menu-card dark-card yamato-menu-card">
+                    {% set morningLead = morningDishItems|first %}
+                    <img src="{{ morningLead ? morningLead.imageUrl : '/img/imagenes/menu/platillos de la manana/huevos rancheros.jpeg' }}" alt="Desayunos y favoritos">
+                    <div>
+                        
+                        <h3>Desayunos</h3>
+                        <p>Platillos de manana, antojitos y favoritos calientes para empezar con calma.</p>
+                        <ul class="yamato-menu-list">
+                            {% for item in morningDishItems|slice(0, 4) %}
+                                <li>
+                                    <strong>{{ item.name }}</strong>
+                                    <span>${{ item.price|number_format(0, '.', ',') }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section home-scroll-section" id="contactanos" data-scroll-section>
+        <div class="contact-container">
+            {% include 'restaurant/_contact.html.twig' with { contact: contact } %}
+        </div>
+    </section>
+</main>
+{% endblock %}

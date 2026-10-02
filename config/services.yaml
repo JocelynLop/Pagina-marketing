@@ -19,5 +19,13 @@ services:
     App\:
         resource: '../src/'
 
+    App\Security\UserStore:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    App\Service\RestaurantDataStore:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

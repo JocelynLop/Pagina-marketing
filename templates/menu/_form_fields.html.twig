@@ -1,0 +1,37 @@
+<div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label" for="name">Nombre</label>
+        <input class="form-control form-control-lg" id="name" name="name" required value="{{ item.name|default('') }}">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label" for="price">Precio</label>
+        <input class="form-control form-control-lg" id="price" name="price" type="number" min="0" step="1" required value="{{ item.price|default('') }}">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label" for="type">Tipo</label>
+        <select class="form-control form-control-lg" id="type" name="type" required data-menu-type-select>
+            <option value="morning" {{ item.type|default('') == 'morning' ? 'selected' : '' }}>Manana</option>
+            <option value="afternoon" {{ item.type|default('') == 'afternoon' ? 'selected' : '' }}>Tarde</option>
+        </select>
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="category">Categoria</label>
+        <select class="form-control form-control-lg" id="category" name="category" required data-menu-category-select>
+            {% for group in menuCategories %}
+                <optgroup label="{{ group.label }}">
+                    {% for value, label in group.categories %}
+                        <option value="{{ value }}" data-category-types="{{ menuCategoryTypes[value]|default(['morning', 'afternoon'])|join(' ') }}" {{ item.category|default('entradas') == value ? 'selected' : '' }}>{{ label }}</option>
+                    {% endfor %}
+                </optgroup>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="description">Descripcion</label>
+        <textarea class="form-control" id="description" name="description" rows="4" required>{{ item.description|default('') }}</textarea>
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="imageUrl">Imagen</label>
+        <input class="form-control" id="imageUrl" name="imageUrl" placeholder="/img/imagenes/menu/..." value="{{ item.imageUrl|default('') }}">
+    </div>
+</div>

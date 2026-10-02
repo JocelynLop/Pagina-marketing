@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<main class="auth-shell">
+    <nav class="auth-nav" aria-label="Volver al restaurante">
+        <a href="{{ path('app_home') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Volver al inicio</a>
+        <span>Restaurante &amp; asador</span>
+    </nav>
+    <section class="auth-panel" aria-labelledby="auth-title">
+        <a class="auth-brand" href="{{ path('app_home') }}">Las Tablas<span>Cosamaloapan, Veracruz</span></a>
+        {% block auth_content %}{% endblock %}
+    </section>
+    <footer class="auth-footer">Buena mesa. Buenos momentos.</footer>
+</main>
+{% endblock %}

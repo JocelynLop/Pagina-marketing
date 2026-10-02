@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ post.title }} | Las Tablas{% endblock %}
+
+{% block body %}
+<main class="site-shell">
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">Las Tablas</a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#blogDetailNav" aria-label="Abrir menu">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="blogDetailNav">
+                <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <a class="nav-link" href="{{ path('app_blog') }}">Volver al blog</a>
+                    <a class="nav-link" href="{{ path('app_menu') }}">Menu</a>
+                    <a class="nav-link" href="{{ path('app_home') }}#contactanos">Contactanos</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <article class="blog-detail">
+        <header style="background-image: url('{{ post.imageUrl }}');">
+            <div class="hero-overlay"></div>
+            <div class="container">
+                <span class="eyebrow">Blog</span>
+                <h1>{{ post.title }}</h1>
+                <p>{{ post.summary }}</p>
+            </div>
+        </header>
+        <section class="container blog-body">
+            {% include 'admin/_messages.html.twig' ignore missing %}
+            <div class="blog-content">
+                <p>{{ post.content|nl2br }}</p>
+                <form method="post" action="{{ path('app_blog_heart', { id: post.id }) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('heart_blog_' ~ post.id) }}">
+                    <button class="heart-button {{ post.heartedByViewer ? 'active' : '' }}" type="submit">
+                        <i class="bi {{ post.heartedByViewer ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                        {{ post.hearts }} corazon{{ post.hearts == 1 ? '' : 'es' }}
+                    </button>
+                </form>
+            </div>
+
+            <section class="comments-box">
+                <div class="section-toolbar compact">
+                    <div><span class="eyebrow dark">Comentarios</span><h2>{{ comments|length }} comentario{{ comments|length == 1 ? '' : 's' }}</h2></div>
+                </div>
+                {% if app.user %}
+                    <form class="comment-form" method="post" action="{{ path('app_blog_comment', { id: post.id }) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('comment_blog_' ~ post.id) }}">
+                        <textarea class="form-control" name="content" rows="3" placeholder="Escribe tu comentario" required></textarea>
+                        <button class="btn btn-dark action-button" type="submit">Comentar</button>
+                    </form>
+                {% else %}
+                    <div class="login-callout">
+                        <p>Inicia sesion o crea una cuenta para dejar un comentario.</p>
+                        <div class="button-row">
+                            <a class="btn btn-dark action-button" href="{{ path('app_login') }}">Iniciar sesion</a>
+                            <a class="btn btn-outline-dark action-button" href="{{ path('app_register') }}">Crear cuenta</a>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="comment-list">
+                    {% for comment in comments %}
+                        <article>
+                            <strong>{{ comment.author }}</strong>
+                            <time>{{ comment.createdAt|date('d/m/Y H:i') }}</time>
+                            <p>{{ comment.content }}</p>
+                        </article>
+                    {% else %}
+                        <p class="no-results">Aun no hay comentarios.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </section>
+    </article>
+</main>
+{% endblock %}

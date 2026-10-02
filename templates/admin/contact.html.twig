@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin contacto | Las Tablas{% endblock %}
+
+{% block body %}
+<main class="admin-shell">
+    {% include 'admin/_sidebar.html.twig' with { active: active } %}
+    <section class="admin-content">
+        <div class="admin-hero contact-admin-hero">
+            <div class="admin-heading">
+                <div>
+                    <span class="eyebrow">Panel admin</span>
+                    <h1>Contacto y ubicacion</h1>
+                    <p>Edita la informacion visible para clientes y los enlaces de accion del sitio.</p>
+                </div>
+                <a class="btn btn-light action-button" href="{{ path('app_home') }}#contactanos">Ver contacto</a>
+            </div>
+        </div>
+        {% include 'admin/_messages.html.twig' ignore missing %}
+        {% if errors is not empty %}
+            <div class="alert alert-danger shadow-sm">{% for error in errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+        <div class="admin-grid">
+            <form class="publication-form" method="post" action="{{ path('app_admin_contact') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('save_contact') }}">
+                <div class="form-section-title"><i class="bi bi-pencil-square"></i>Datos visibles</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="phone">Telefono</label>
+                        <input class="form-control form-control-lg" id="phone" name="phone" value="{{ contact.phone }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="whatsapp">WhatsApp</label>
+                        <input class="form-control form-control-lg" id="whatsapp" name="whatsapp" value="{{ contact.whatsapp }}" placeholder="Pendiente">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="address">Direccion</label>
+                        <input class="form-control" id="address" name="address" value="{{ contact.address }}" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="mapsUrl">Google Maps</label>
+                        <input class="form-control" id="mapsUrl" name="mapsUrl" type="url" value="{{ contact.mapsUrl }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="facebookUrl">Facebook</label>
+                        <input class="form-control" id="facebookUrl" name="facebookUrl" type="url" value="{{ contact.facebookUrl }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="email">Correo</label>
+                        <input class="form-control" id="email" name="email" type="email" value="{{ contact.email }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="message">Texto de contacto</label>
+                        <textarea class="form-control" id="message" name="message" rows="4">{{ contact.message }}</textarea>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button class="btn btn-dark action-button" type="submit"><i class="bi bi-check2"></i>Guardar</button>
+                </div>
+            </form>
+            <aside class="preview-card">
+                <span class="eyebrow dark">Acciones</span>
+                <h2 class="preview-heading">Iconos interactivos</h2>
+                <p>Telefono copia el numero, ubicacion abre Maps, Facebook abre la pagina y WhatsApp aparecera cuando haya numero.</p>
+            </aside>
+        </div>
+    </section>
+</main>
+{% endblock %}

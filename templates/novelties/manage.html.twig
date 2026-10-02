@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin novedades | Las Tablas{% endblock %}
+
+{% block body %}
+<main class="admin-shell">
+    {% include 'admin/_sidebar.html.twig' with { active: active } %}
+    <section class="admin-content">
+        <div class="admin-hero food-admin-hero">
+            <div class="admin-heading">
+                <div>
+                    <span class="eyebrow">Panel admin</span>
+                    <h1>Novedades</h1>
+                    <p>Crea promociones, eventos y anuncios para que los clientes vean lo mas reciente de Las Tablas.</p>
+                </div>
+                <a class="btn btn-light action-button" href="{{ path('app_novelties') }}">Ver novedades</a>
+            </div>
+            <div class="admin-stats">
+                <article><span>{{ novelties|length }}</span><p>novedades totales</p></article>
+                <article><span>{{ novelties|filter(n => n.isExpired)|length }}</span><p>caducadas visibles en admin</p></article>
+                <article><span>{{ novelties|filter(n => n.customLabel)|length }}</span><p>con etiqueta</p></article>
+            </div>
+        </div>
+
+        {% include 'admin/_messages.html.twig' ignore missing %}
+        {% if errors is not empty %}
+            <div class="alert alert-danger shadow-sm">{% for error in errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+
+        <div class="admin-grid">
+            <form class="publication-form" method="post" action="{{ path('app_admin_novelties') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('create_novelty') }}">
+                <div class="form-section-title"><i class="bi bi-plus-circle"></i>Nueva novedad</div>
+                {% include 'novelties/_form_fields.html.twig' with { novelty: {} } %}
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button class="btn btn-dark action-button" type="submit"><i class="bi bi-send"></i>Publicar</button>
+                    <button class="btn btn-outline-secondary action-button" type="reset"><i class="bi bi-arrow-counterclockwise"></i>Limpiar</button>
+                </div>
+            </form>
+
+            <aside class="preview-card">
+                <span class="eyebrow dark">Regla importante</span>
+                <h2 class="preview-heading">Las caducadas no desaparecen del admin</h2>
+                <p>Si una novedad caduca, el cliente deja de verla, pero aqui seguira disponible para editarla, renovarla o eliminarla.</p>
+                <div class="info-pill-list">
+                    <span>Etiqueta temporal</span>
+                    <span>Cuenta regresiva</span>
+                    <span>Vista por cliente</span>
+                </div>
+            </aside>
+        </div>
+
+        <section class="published-list">
+            <div class="section-toolbar compact">
+                <div>
+                    <span class="eyebrow dark">Contenido creado</span>
+                    <h2>Novedades guardadas</h2>
+                </div>
+                <span class="counter-pill">{{ novelties|length }} total</span>
+            </div>
+            {% if novelties is empty %}
+                <div class="empty-state light"><i class="bi bi-inbox"></i><h3>Sin novedades</h3><p>Crea la primera desde el formulario superior.</p></div>
+            {% else %}
+                <div class="table-responsive publication-table">
+                    <table class="table align-middle">
+                        <thead><tr><th>Titulo</th><th>Etiqueta</th><th>Estado</th><th>Fecha</th><th class="text-end">Acciones</th></tr></thead>
+                        <tbody>
+                            {% for novelty in novelties %}
+                                <tr>
+                                    <td><strong>{{ novelty.title }}</strong><span>{{ novelty.summary }}</span></td>
+                                    <td>{{ novelty.customLabel ?: 'Sin etiqueta' }}</td>
+                                    <td>{{ novelty.isExpired ? 'Caducada para cliente' : 'Visible' }}</td>
+                                    <td>{{ novelty.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td class="text-end">
+                                        <div class="table-actions">
+                                            <a class="btn btn-sm btn-outline-dark" href="{{ path('app_admin_novelty_edit', { id: novelty.id }) }}"><i class="bi bi-pencil"></i></a>
+                                            <form method="post" action="{{ path('app_admin_novelty_delete', { id: novelty.id }) }}" data-confirm-delete>
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete_novelty_' ~ novelty.id) }}">
+                                                <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </section>
+    </section>
+</main>
+{% endblock %}

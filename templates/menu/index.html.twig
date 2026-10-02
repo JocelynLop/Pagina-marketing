@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Menu | Las Tablas{% endblock %}
+
+{% block body %}
+<main class="site-shell">
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">Las Tablas</a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-main-nav-toggle aria-controls="menuNav" aria-expanded="false" aria-label="Abrir menu">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="menuNav">
+                <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <a class="nav-link" href="{{ path('app_home') }}#quienes-somos">Quienes somos</a>
+                    <a class="nav-link" href="{{ path('app_home') }}#novedades">Novedades</a>
+                    <a class="nav-link" href="{{ path('app_home') }}#blog">Blog</a>
+                    <a class="nav-link" href="{{ path('app_home') }}#contactanos">Contactanos</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="btn btn-sm nav-admin-button" href="{{ path('app_admin_menu') }}"><i class="bi bi-sliders"></i> Admin</a>
+                    {% elseif app.user %}
+                        <form method="post" action="{{ path('app_logout') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button class="btn btn-sm login-button ghost" type="submit"><i class="bi bi-box-arrow-right"></i> Salir</button>
+                        </form>
+                    {% else %}
+                        <a class="btn btn-sm login-button" href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-right"></i> Entrar</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="list-hero menu-hero">
+        <div class="container">
+            <span class="eyebrow">Menu</span>
+            <h1>Elige tu antojo favorito.</h1>
+            <p>Marca con estrella los platillos que mas te gustan. Los favoritos de todos aparecen en el carrusel principal.</p>
+        </div>
+    </section>
+
+    <section class="publication-section">
+        <div class="container">
+            <div class="menu-tabs" role="tablist">
+                <button class="{{ activeType == 'morning' ? 'active' : '' }}" type="button" data-menu-filter="morning">Menu de manana</button>
+                <button class="{{ activeType == 'afternoon' ? 'active' : '' }}" type="button" data-menu-filter="afternoon">Menu de tarde</button>
+            </div>
+            <div class="menu-category-filters menu-category-filter-panel" aria-label="Filtrar categorias">
+                <button class="active" type="button" data-category-filter="all">Todas</button>
+                {% set renderedCategories = [] %}
+                {% for group in categoryGroups %}
+                    {% for category in group.categories %}
+                        {% if category.key not in renderedCategories %}
+                            <button type="button" data-category-filter="{{ category.key }}" data-category-types="{{ category.types|join(' ') }}">{{ category.label }}</button>
+                            {% set renderedCategories = renderedCategories|merge([category.key]) %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            <div class="menu-category-stack" data-menu-list>
+                {% for group in categoryGroups %}
+                    <section class="menu-category-group" data-menu-category-section>
+                        <div class="menu-category-group-heading">
+                            <span class="eyebrow dark">{{ group.label }}</span>
+                        </div>
+                        {% for category in group.categories %}
+                            <div class="menu-category-block" data-menu-category-section data-menu-category-key="{{ category.key }}" data-category-types="{{ category.types|join(' ') }}">
+                                <button class="menu-category-toggle" type="button" data-menu-category-toggle aria-expanded="true">
+                                    <span>{{ category.label }}</span>
+                                    <i class="bi bi-chevron-up" aria-hidden="true"></i>
+                                </button>
+                                <div class="menu-grid" data-menu-category-panel>
+                                    {% for item in category.items %}
+                                        <article class="menu-card" data-menu-card data-menu-type="{{ item.type }}" data-menu-category="{{ item.category }}">
+                                            <img src="{{ item.imageUrl }}" alt="{{ item.name }}">
+                                            <div class="menu-card-body">
+                                                <div class="publication-meta">
+                                                    <span>{{ item.type == 'morning' ? 'Manana' : 'Tarde' }}</span>
+                                                    <strong>${{ item.price|number_format(0, '.', ',') }}</strong>
+                                                </div>
+                                                <h3>{{ item.name }}</h3>
+                                                <p>{{ item.description }}</p>
+                                                <form method="post" action="{{ path('app_menu_star', { id: item.id }) }}">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('star_menu_' ~ item.id) }}">
+                                                    <button class="star-button {{ item.starredByViewer ? 'active' : '' }}" type="submit">
+                                                        <i class="bi {{ item.starredByViewer ? 'bi-star-fill' : 'bi-star' }}"></i>
+                                                        <span>{{ item.stars }} estrella{{ item.stars == 1 ? '' : 's' }}</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </article>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </section>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

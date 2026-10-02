@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Blog | Las Tablas{% endblock %}
+
+{% block body %}
+<main class="site-shell">
+    <nav class="navbar navbar-expand-lg glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">Las Tablas</a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#blogNav" aria-label="Abrir menu">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="blogNav">
+                <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <a class="nav-link" href="{{ path('app_home') }}#quienes-somos">Quienes somos</a>
+                    <a class="nav-link" href="{{ path('app_home') }}#novedades">Novedades</a>
+                    <a class="nav-link" href="{{ path('app_menu') }}">Menu</a>
+                    <a class="nav-link" href="{{ path('app_home') }}#contactanos">Contactanos</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="btn btn-sm nav-admin-button" href="{{ path('app_admin_blog') }}"><i class="bi bi-sliders"></i> Admin</a>
+                    {% elseif app.user %}
+                        <form method="post" action="{{ path('app_logout') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button class="btn btn-sm login-button ghost" type="submit"><i class="bi bi-box-arrow-right"></i> Salir</button>
+                        </form>
+                    {% else %}
+                        <a class="btn btn-sm login-button" href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-right"></i> Entrar</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section class="list-hero blog-hero">
+        <div class="container">
+            <span class="eyebrow">Blog</span>
+            <h1>Historias, sabores y momentos de Las Tablas.</h1>
+            <p>Lee entradas sobre nuestros platillos, ambiente y experiencias para compartir.</p>
+        </div>
+    </section>
+    <section class="publication-section">
+        <div class="container">
+            <div class="publication-grid all-publications">
+                {% for post in posts %}
+                    {% include 'blog/_card_modal.html.twig' with { post: post } %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

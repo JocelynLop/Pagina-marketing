@@ -1,0 +1,51 @@
+<div class="contact-band restaurant-contact">
+    <div class="contact-brand-panel">
+        <strong>Las Tablas</strong>
+        <small>Restaurante / Asador</small>
+        <p>Un lugar para compartir parrilla, desayunos, cafe y bebidas en Cosamaloapan.</p>
+    </div>
+    <div class="contact-main-panel">
+        <span class="eyebrow">Contactanos</span>
+        <h2>Te esperamos en Las Tablas.</h2>
+        <p>{{ contact.message }}</p>
+        <div class="contact-lines">
+            <span>
+                <i class="bi bi-telephone"></i>
+                <strong>Telefono</strong>
+                <em>{{ contact.phone }}</em>
+            </span>
+            <span>
+                <i class="bi bi-geo-alt"></i>
+                <strong>Direccion</strong>
+                <em>{{ contact.address }}</em>
+            </span>
+            {% if contact.email %}
+                <span>
+                    <i class="bi bi-envelope"></i>
+                    <strong>Correo</strong>
+                    <em>{{ contact.email }}</em>
+                </span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="contact-actions contact-action-panel">
+        <button class="contact-icon" type="button" data-copy-phone="{{ contact.phone }}" title="Copiar telefono">
+            <i class="bi bi-telephone"></i>
+            <span>Telefono</span>
+        </button>
+        <a class="contact-icon" href="{{ contact.mapsUrl }}" target="_blank" rel="noopener" title="Abrir ubicacion">
+            <i class="bi bi-geo-alt"></i>
+            <span>Ubicacion</span>
+        </a>
+        <a class="contact-icon" href="{{ contact.facebookUrl }}" target="_blank" rel="noopener" title="Abrir Facebook">
+            <i class="bi bi-facebook"></i>
+            <span>Facebook</span>
+        </a>
+        {% if contact.whatsapp %}
+            <a class="contact-icon" href="https://wa.me/{{ contact.whatsapp|replace({' ': '', '-': ''}) }}" target="_blank" rel="noopener" title="Abrir WhatsApp">
+                <i class="bi bi-whatsapp"></i>
+                <span>WhatsApp</span>
+            </a>
+        {% endif %}
+    </div>
+</div>
